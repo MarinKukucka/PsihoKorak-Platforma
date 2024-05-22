@@ -12,6 +12,10 @@ builder.Services.AddDbContext<PsihoKorakPlatformaContext>(
     options => options.UseSqlServer(configuration.GetConnectionString("PsihoKorakPlatforma"))
 );
 
+builder.Services.AddSession();
+
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -29,8 +33,10 @@ app.UseRouting();
 
 app.UseAuthorization();
 
+app.UseSession();
+
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Psychologist}/{action=Index}/{id?}");
 
 app.Run();
