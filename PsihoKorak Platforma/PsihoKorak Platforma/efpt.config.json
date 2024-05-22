@@ -1,0 +1,78 @@
+﻿{
+   "CodeGenerationMode": 3,
+   "ContextClassName": "PsihoKorakPlatformaContext",
+   "ContextNamespace": null,
+   "DefaultDacpacSchema": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": false,
+   "ModelNamespace": null,
+   "OutputContextPath": null,
+   "OutputPath": "Models",
+   "PreserveCasingWithRegex": true,
+   "ProjectRootNamespace": "PsihoKorak_Platforma",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 2,
+   "SelectedToBeGenerated": 0,
+   "T4TemplatePath": null,
+   "Tables": [
+      {
+         "Name": "[dbo].[Helps]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Medication]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MedicationType]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Patient]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Psychologist]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Record]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Session]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SessionType]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Uses]",
+         "ObjectType": 0
+      }
+   ],
+   "UiHint": "72b2f5858b73e2b.PsihoKorakPlatforma.dbo",
+   "UncountableWords": null,
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": false,
+   "UseDateOnlyTimeOnly": false,
+   "UseDbContextSplitting": false,
+   "UseDecimalDataAnnotationForSprocResult": true,
+   "UseFluentApiOnly": true,
+   "UseHandleBars": false,
+   "UseHierarchyId": false,
+   "UseInflector": true,
+   "UseLegacyPluralizer": false,
+   "UseManyToManyEntity": false,
+   "UseNoDefaultConstructor": false,
+   "UseNoNavigations": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UsePrefixNavigationNaming": false,
+   "UseSchemaFolders": false,
+   "UseSchemaNamespaces": false,
+   "UseSpatial": false,
+   "UseT4": false
+}

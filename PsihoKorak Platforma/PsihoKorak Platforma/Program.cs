@@ -1,7 +1,16 @@
+using Microsoft.EntityFrameworkCore;
+using PsihoKorak_Platforma.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+IConfiguration configuration = builder.Configuration.AddJsonFile("appsettings.json").Build();
+
+builder.Services.AddDbContext<PsihoKorakPlatformaContext>(
+    options => options.UseSqlServer(configuration.GetConnectionString("PsihoKorakPlatforma"))
+);
 
 var app = builder.Build();
 
