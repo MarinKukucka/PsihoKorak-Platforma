@@ -1,0 +1,93 @@
+﻿body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: center;
+    flex: 1;
+}
+
+header h1 {
+    margin: 0;
+    text-align: center;
+    flex: 1;
+}
+
+header button.logout {
+    margin-left: auto;
+    background-color: darkred;
+    width: 80px;
+    border-radius: 10px;
+    border-width: 0px;
+    border-color: black;
+}
+
+.container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    flex-direction: column; 
+    justify-content: center; 
+}
+
+.container h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.container label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.container select,
+.container input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.container select:focus,
+.container input:focus {
+    outline: none;
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.error-message {
+    color: #dc3545;
+    margin-top: 10px;
+}
+
+.container button[type="submit"] {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    align-self: center;
+}
+
+.container button[type="submit"]:hover {
+    background-color: #0056b3;
+}

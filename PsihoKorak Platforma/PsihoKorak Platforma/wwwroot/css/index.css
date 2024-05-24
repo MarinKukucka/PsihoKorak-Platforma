@@ -57,3 +57,9 @@ table th {
 .btn {
     margin-top: 10px;
 }
+
+.table-container button{
+    background-color: lightblue;
+    border-radius: 5px;
+    border-width: 0px;
+}

@@ -11,7 +11,7 @@ public partial class Help
 
     public string Note { get; set; }
 
-    public int PatientId { get; set; }
+    public int? PatientId { get; set; }
 
     public int SessionId { get; set; }
 

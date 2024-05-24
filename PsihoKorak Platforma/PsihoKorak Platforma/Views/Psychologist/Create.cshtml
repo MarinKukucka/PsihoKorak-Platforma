@@ -1,0 +1,51 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor Accessor
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/css/create.css" />
+    <title>@ViewData["Title"]</title>
+</head>
+
+<body>
+    <header class="header-container">
+        <div class="header-content">
+            <h1 class="display-4">@Accessor.HttpContext.Session.GetString("FirstName") @Accessor.HttpContext.Session.GetString("LastName")</h1>
+            <button type="button" class="logout" onclick="location.href='@Url.Action("Login", "Psychologist")'">Log out</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <form action="@Url.Action("CreateSession", "Psychologist")" method="post">
+            @Html.AntiForgeryToken()
+            <h1>Unos nove sesije</h1>
+            <div>
+                <label for="Date" class="form-label">Date and time</label>
+                <input name="Date" class="form-control" type="datetime-local"/>
+            </div>
+            <div>
+                <label for="Duration" class="form-label">Duration in minutes</label>
+                <input name="Duration" class="form-control" type="number" min="0"/>
+            </div>
+            <div>
+                <label class="form-label">Tip sesije</label>
+                <select class="form-control" name="SessionTypeId" >
+                    <option disabled selected value="">Choose session type</option>
+                    @foreach (var sessionType in ViewBag.SessionItems)
+                    {
+                        <option value="@sessionType.Value">@sessionType.Text</option>
+                    }
+                </select>
+            </div>
+            <div>
+                <button type="submit">Kreiraj novu sesiju</button>
+            </div>
+        </form>
+        <div class="error-message">@ViewData["Error"]</div>
+    </div>
+</body>

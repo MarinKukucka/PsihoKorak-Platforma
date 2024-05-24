@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PsihoKorak_Platforma.Models;
 using PsihoKorak_Platforma.Utils;
@@ -55,11 +56,6 @@ namespace PsihoKorak_Platforma.Controllers
 
         public IActionResult Login()
         {
-            if(HttpContext.Session.GetString("Id") != null)
-            {
-                return RedirectToAction("Index");
-            }
-
             HttpContext.Session.Clear();
             HttpContext.Response.Cookies.Append("SessionName", "", new CookieOptions
             {
@@ -102,11 +98,6 @@ namespace PsihoKorak_Platforma.Controllers
 
         public IActionResult Register()
         {
-            if (HttpContext.Session.GetString("Id") != null)
-            {
-                return RedirectToAction("Index");
-            }
-
             HttpContext.Session.Clear();
             HttpContext.Response.Cookies.Append("SessionName", "", new CookieOptions
             {
@@ -158,6 +149,88 @@ namespace PsihoKorak_Platforma.Controllers
                 ViewData["Error"] = "Error with registration";
                 return View("Register");
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Create()
+        {
+            if (HttpContext.Session.GetString("Id") == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            await PrepareDropDownList();
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateSession(DateTime Date, int Duration, String SessionTypeId)
+        {
+            try
+            {
+                Session newSession = new Session
+                {
+                    DateTime = Date,
+                    Duration = TimeSpan.FromMinutes(Duration),
+                    SessionTypeId = int.Parse(SessionTypeId)
+                };
+
+                ctx.Sessions.Add(newSession);
+                await ctx.SaveChangesAsync();
+
+                var lastSession = await ctx.Sessions
+                                           .OrderByDescending(s => s.SessionId) 
+                                           .FirstOrDefaultAsync();
+
+                var newHelp = new Help
+                {
+                    PatientId = null,
+                    SessionId = lastSession.SessionId,
+                    PsychologistId = int.Parse(HttpContext.Session.GetString("Id"))
+                };
+
+                ctx.Helps.Add(newHelp);
+                await ctx.SaveChangesAsync();
+
+                var query = ctx.Sessions.AsNoTracking()
+                                        .Where(s => s.Helps.Any(h => h.PsychologistId == int.Parse(HttpContext.Session.GetString("Id"))))
+                                        .ToList();
+
+                var sessions = query.Select(s => new MDViewModel
+                {
+                    SessionId = s.SessionId,
+                    DateTime = s.DateTime.ToString(),
+                    Duration = s.Duration.ToString(),
+                    Helps = s.Helps
+                }).ToList();
+
+                var model = new ListMDViewModel
+                {
+                    Md = sessions,
+                };
+
+                return View(nameof(Index), model);
+            }
+            catch
+            {
+                await PrepareDropDownList();
+                return View("Create");
+            }
+        }
+
+        private async Task PrepareDropDownList()
+        {
+            var sessionTypes = await ctx.SessionTypes
+                                       .OrderBy(st => st.SessionTypeId)
+                                       .Select(st => new SelectListItem
+                                       {
+                                           Value = st.SessionTypeId.ToString(),
+                                           Text = st.SessionTypeName
+                                       })
+                                       .ToListAsync();
+
+            ViewBag.SessionItems = sessionTypes;
         }
     }
 }
