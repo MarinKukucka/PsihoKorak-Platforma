@@ -35,19 +35,21 @@ public partial class PsihoKorakPlatformaContext : DbContext
     {
         modelBuilder.Entity<Help>(entity =>
         {
-            entity.HasNoKey();
+            entity.HasKey(e => e.HelpsId);
 
-            entity.HasOne(d => d.Patient).WithMany()
+            entity.Property(e => e.Note).IsUnicode(false);
+
+            entity.HasOne(d => d.Patient).WithMany(p => p.Helps)
                 .HasForeignKey(d => d.PatientId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Helps_Patient");
 
-            entity.HasOne(d => d.Psychologist).WithMany()
+            entity.HasOne(d => d.Psychologist).WithMany(p => p.Helps)
                 .HasForeignKey(d => d.PsychologistId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Helps_Psychologist");
 
-            entity.HasOne(d => d.Session).WithMany()
+            entity.HasOne(d => d.Session).WithMany(p => p.Helps)
                 .HasForeignKey(d => d.SessionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Helps_Session");

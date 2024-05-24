@@ -18,4 +18,6 @@ public partial class Psychologist
     public string FirstName { get; set; }
 
     public string LastName { get; set; }
+
+    public virtual ICollection<Help> Helps { get; set; } = new List<Help>();
 }

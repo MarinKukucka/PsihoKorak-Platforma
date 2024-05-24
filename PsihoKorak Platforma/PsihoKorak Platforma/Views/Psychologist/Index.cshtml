@@ -1,11 +1,54 @@
-﻿@using Microsoft.AspNetCore.Http
+﻿@model PsihoKorak_Platforma.ViewModels.ListMDViewModel
+@using Microsoft.AspNetCore.Http
 @inject IHttpContextAccessor Accessor
 
 @{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome @Accessor.HttpContext.Session.GetString("FirstName") @Accessor.HttpContext.Session.GetString("LastName")</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/css/index.css" />
+    <title>@ViewData["Title"]</title>
+</head>
+
+<body>
+    <header class="header-container">
+        <div class="header-content">
+            <h1 class="display-4">@Accessor.HttpContext.Session.GetString("FirstName") @Accessor.HttpContext.Session.GetString("LastName")</h1>
+            <button type="button" class="logout" onclick="location.href='@Url.Action("Login", "Psychologist")'">Log out</button>
+        </div>
+    </header>
+
+    <div class="table-container">
+        <button action="@Url.Action("CreateSession", "PSychologist")">Unos nove sesije</button>
+        <table>
+            <thead>
+                <tr>
+                    <th>
+                        #
+                    </th>
+                    <th>
+                        Date and time
+                    </th>
+                    <th>
+                        Duration
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var session in Model.Md)
+                {
+                    <tr>
+                        <td>@session.SessionId</td>
+                        <td>@session.DateTime</td>
+                        <td>@session.Duration</td>
+                        <td><button>Detail</button></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</body>

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using PsihoKorak_Platforma.Models;
 using PsihoKorak_Platforma.Utils;
+using PsihoKorak_Platforma.ViewModels;
 
 namespace PsihoKorak_Platforma.Controllers
 {
@@ -27,7 +28,24 @@ namespace PsihoKorak_Platforma.Controllers
 
             if (int.TryParse(HttpContext.Session.GetString("Id"), out int psychologistId))
             {
-                return View();
+                var query = ctx.Sessions.AsNoTracking()
+                                        .Where(s => s.Helps.Any(h => h.PsychologistId == psychologistId))
+                                        .ToList();
+
+                var sessions = query.Select(s => new MDViewModel
+                {
+                    SessionId = s.SessionId,
+                    DateTime = s.DateTime.ToString(),
+                    Duration = s.Duration.ToString(),
+                    Helps = s.Helps
+                }).ToList();
+
+                var model = new ListMDViewModel
+                {
+                    Md = sessions,
+                };
+
+                return View(model);
             }
             else
             {
@@ -64,7 +82,7 @@ namespace PsihoKorak_Platforma.Controllers
 
             var psychologist = await ctx.Psychologists.AsNoTracking()
                                                       .FirstOrDefaultAsync(p => p.Email == Email);
-
+            
             if (psychologist != null)
             {
                 string hashedPassword = CryptoUtils.HashPassword(Password, Convert.FromBase64String(psychologist.PasswordSalt));

@@ -15,5 +15,7 @@ public partial class Session
 
     public int SessionTypeId { get; set; }
 
+    public virtual ICollection<Help> Helps { get; set; } = new List<Help>();
+
     public virtual SessionType SessionType { get; set; }
 }

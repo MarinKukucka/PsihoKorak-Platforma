@@ -7,6 +7,10 @@ namespace PsihoKorak_Platforma.Models;
 
 public partial class Help
 {
+    public int HelpsId { get; set; }
+
+    public string Note { get; set; }
+
     public int PatientId { get; set; }
 
     public int SessionId { get; set; }
