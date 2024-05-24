@@ -1,32 +1,34 @@
-﻿@model PsihoKorak_Platforma.ViewModels.LoginViewModel
-
-@{
+﻿@{
     ViewData["Title"] = "Login";
 }
 
 <head>
-    <link rel="stylesheet" href="/css/login.css"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/css/login.css" />
+    <title>@ViewData["Title"]</title>
 </head>
 
 <body>
     <div class="login-box">
-        <form asp-action="LoginUser" method="post">
-            <h1>Login as user</h1>
+        <form action="@Url.Action("LoginPsychologist", "Psychologist")" method="post">
+            @Html.AntiForgeryToken()
+            <h1>PsihoKorak Platforma</h1>
             <div>
-                <label asp-for="Email" class="form-label">Email</label>
-                <input asp-for="Email" class="form-control" />
+                <label for="Email" class="form-label">Email</label>
+                <input name="Email" class="form-control" type="email" autocomplete="email" placeholder="Enter your email" />
             </div>
             <div>
-                <label asp-for="Password" class="form-label">Password</label>
-                <input asp-for="Password" class="form-control" type="password" />
+                <label for="Password" class="form-label">Password</label>
+                <input name="Password" class="form-control" type="password" autocomplete="current-password" placeholder="Enter your password" />
             </div>
             <div>
                 <button type="submit">Login</button>
             </div>
         </form>
         <div class="error-message">@ViewData["Error"]</div>
-    </div>
-    <div class="center">
-        <button type="button" onclick="location.href='@Url.Action("Register", "Psychologist")'">Register instead</button>
+        <div class="center">
+            <button type="button" onclick="location.href='@Url.Action("Register", "Psychologist")'">Register instead</button>
+        </div>
     </div>
 </body>

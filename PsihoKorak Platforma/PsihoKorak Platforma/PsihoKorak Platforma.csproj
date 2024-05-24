@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>PsihoKorak_Platforma</RootNamespace>
+    <UserSecretsId>8caf46a2-4f4e-410b-ab9d-5703480bea99</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

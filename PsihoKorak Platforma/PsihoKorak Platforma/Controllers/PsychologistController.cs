@@ -2,8 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using PsihoKorak_Platforma.Models;
 using PsihoKorak_Platforma.Utils;
-using System.Diagnostics;
-using System.Security.Cryptography;
 
 namespace PsihoKorak_Platforma.Controllers
 {
@@ -40,30 +38,31 @@ namespace PsihoKorak_Platforma.Controllers
         public IActionResult Login()
         {
             HttpContext.Session.Clear();
-            HttpContext.Response.Cookies.Append("SessionName", "", new CookieOptions()
+            HttpContext.Response.Cookies.Append("SessionName", "", new CookieOptions
             {
                 Expires = DateTime.Now.AddDays(-1)
             });
             HttpContext.Response.Cookies.Delete("SessionName");
-            
+
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> LoginPsychologist(String email, string password)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> LoginPsychologist(String Email, String Password)
         {
-            if(string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password)) 
+            if (!ModelState.IsValid)
             {
-                ViewData["Error"] = "Wrong email or password";
+                ViewData["Error"] = "Invalid data.";
                 return View("Login");
             }
 
             var psychologist = await ctx.Psychologists.AsNoTracking()
-                                                       .FirstOrDefaultAsync(p => p.Email == email);
+                                                      .FirstOrDefaultAsync(p => p.Email == Email);
 
-            if(psychologist != null)
+            if (psychologist != null)
             {
-                String hashedPassword = CryptoUtils.HashPassword(password, Convert.FromBase64String(psychologist.PasswordSalt));
+                string hashedPassword = CryptoUtils.HashPassword(Password, Convert.FromBase64String(psychologist.PasswordSalt));
                 if (psychologist.HashedPassword.Equals(hashedPassword, StringComparison.Ordinal))
                 {
                     HttpContext.Session.SetString("FirstName", psychologist.FirstName);
@@ -76,6 +75,61 @@ namespace PsihoKorak_Platforma.Controllers
 
             ViewData["Error"] = "Wrong email or password";
             return View("Login");
+        }
+
+        public IActionResult Register()
+        {
+            HttpContext.Session.Clear();
+            HttpContext.Response.Cookies.Append("SessionName", "", new CookieOptions
+            {
+                Expires = DateTime.Now.AddDays(-1)
+            });
+            HttpContext.Response.Cookies.Delete("SessionName");
+
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RegisterPsychologist(String FirstName, String LastName, String Email, String Password)
+        {
+            var psythologistToCheck = await ctx.Psychologists.AsNoTracking()
+                                                             .FirstOrDefaultAsync(p => p.Email == Email);
+
+            if (psythologistToCheck != null)
+            {
+                ViewData["Error"] = "Email is already in use";
+                return View("Register");
+            }
+
+            var salt = CryptoUtils.GetSalt();
+            var hashedPassword = CryptoUtils.HashPassword(Password, salt);
+
+            var newPsychologist = new Psychologist
+            {
+                Email = Email,
+                HashedPassword = hashedPassword,
+                PasswordSalt = Convert.ToBase64String(salt),
+                FirstName = FirstName,
+                LastName = LastName
+            };
+
+            try
+            {
+                await ctx.Psychologists.AddAsync(newPsychologist);
+                await ctx.SaveChangesAsync();
+
+                HttpContext.Session.SetString("FirstName", newPsychologist.FirstName);
+                HttpContext.Session.SetString("LastName", newPsychologist.LastName);
+                HttpContext.Session.SetString("Id", newPsychologist.PsychologistId.ToString());
+
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                ViewData["Error"] = "Error with registration";
+                return View("Register");
+            }
         }
     }
 }

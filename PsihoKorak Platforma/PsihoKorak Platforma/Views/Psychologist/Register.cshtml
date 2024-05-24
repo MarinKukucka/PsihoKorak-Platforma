@@ -1,0 +1,44 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/css/login.css" />
+    <title>@ViewData["Title"]</title>
+</head>
+
+<body>
+    <div class="login-box">
+        <form action="@Url.Action("RegisterPsychologist", "PSychologist")" method="post">
+            @Html.AntiForgeryToken() 
+            <h1>PsihoKorak Platforma</h1>
+            <div>
+                <label for="FirstName" class="form-label">First name</label>
+                <input name="FirstName" class="form-control"/>
+            </div>
+            <div>
+                <label for="LastName" class="form-label">Last name</label>
+                <input name="LastName" class="form-control"/>
+            </div>
+            <div>
+                <label for="Email" class="form-label">Email</label>
+                <input name="Email" class="form-control" type="email"/>
+            </div>
+            <div>
+                <label for="Password" class="form-label">Password</label>
+                <input name="Password" class="form-control" type="password"/>
+            </div>
+            <div>
+                <button type="submit">Register</button>
+            </div>
+        </form>
+        <div class="error-message">@ViewData["Error"]</div>
+        <div class="center">
+            <button type="button" onclick="location.href='@Url.Action("Login", "Psychologist")'">Login instead</button>
+        </div>
+    </div>
+</body>
