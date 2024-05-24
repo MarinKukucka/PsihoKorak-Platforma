@@ -7,7 +7,11 @@ namespace PsihoKorak_Platforma.Models;
 
 public partial class Use
 {
+    public int UsesId { get; set; }
+
     public int PatientId { get; set; }
+
+    public string Dose { get; set; }
 
     public int MedicationId { get; set; }
 

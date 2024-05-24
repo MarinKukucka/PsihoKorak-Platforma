@@ -57,10 +57,6 @@ public partial class PsihoKorakPlatformaContext : DbContext
         {
             entity.ToTable("Medication");
 
-            entity.Property(e => e.Dose)
-                .IsRequired()
-                .HasMaxLength(50)
-                .IsUnicode(false);
             entity.Property(e => e.MedicationName)
                 .IsRequired()
                 .HasMaxLength(50)
@@ -164,14 +160,19 @@ public partial class PsihoKorakPlatformaContext : DbContext
 
         modelBuilder.Entity<Use>(entity =>
         {
-            entity.HasNoKey();
+            entity.HasKey(e => e.UsesId);
 
-            entity.HasOne(d => d.Medication).WithMany()
+            entity.Property(e => e.Dose)
+                .IsRequired()
+                .HasMaxLength(50)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.Medication).WithMany(p => p.Uses)
                 .HasForeignKey(d => d.MedicationId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Uses_Medication");
 
-            entity.HasOne(d => d.Patient).WithMany()
+            entity.HasOne(d => d.Patient).WithMany(p => p.Uses)
                 .HasForeignKey(d => d.PatientId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Uses_Patient");

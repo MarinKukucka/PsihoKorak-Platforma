@@ -11,9 +11,9 @@ public partial class Medication
 
     public string MedicationName { get; set; }
 
-    public string Dose { get; set; }
-
     public int MedicationTypeId { get; set; }
 
     public virtual MedicationType MedicationType { get; set; }
+
+    public virtual ICollection<Use> Uses { get; set; } = new List<Use>();
 }

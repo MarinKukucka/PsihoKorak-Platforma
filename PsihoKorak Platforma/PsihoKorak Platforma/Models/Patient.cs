@@ -16,4 +16,6 @@ public partial class Patient
     public string PhoneNumber { get; set; }
 
     public virtual ICollection<Record> Records { get; set; } = new List<Record>();
+
+    public virtual ICollection<Use> Uses { get; set; } = new List<Use>();
 }

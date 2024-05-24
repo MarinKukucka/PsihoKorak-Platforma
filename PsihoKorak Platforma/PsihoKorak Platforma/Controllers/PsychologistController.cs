@@ -37,6 +37,11 @@ namespace PsihoKorak_Platforma.Controllers
 
         public IActionResult Login()
         {
+            if(HttpContext.Session.GetString("Id") != null)
+            {
+                return RedirectToAction("Index");
+            }
+
             HttpContext.Session.Clear();
             HttpContext.Response.Cookies.Append("SessionName", "", new CookieOptions
             {
@@ -79,6 +84,11 @@ namespace PsihoKorak_Platforma.Controllers
 
         public IActionResult Register()
         {
+            if (HttpContext.Session.GetString("Id") != null)
+            {
+                return RedirectToAction("Index");
+            }
+
             HttpContext.Session.Clear();
             HttpContext.Response.Cookies.Append("SessionName", "", new CookieOptions
             {
