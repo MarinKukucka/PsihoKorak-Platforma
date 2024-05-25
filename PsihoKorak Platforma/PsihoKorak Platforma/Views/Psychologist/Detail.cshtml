@@ -23,38 +23,42 @@
     
     <hr />
 
+    <h5>Add new Detail</h5>
+    <div class="add-detail-container">
+        <form action="@Url.Action("CreateHelp", "Psychologist")" method="post">
+            @Html.AntiForgeryToken()
+            <div>
+                <label for="Note" class="form-label">Note</label>
+                <input name="Note" class="form-control" />
+            </div>
+            <div>
+                <label class="form-label">Patient</label>
+                <select class="form-control" name="PatientId">
+                    <option disabled selected value="">Choose patient</option>
+                    @foreach (var patient in Model.Patients)
+                    {
+                        <option value="@patient.PatientId">@patient.FirstName @patient.LastName</option>
+                    }
+                </select>
+            </div>
+            <input type="hidden" name="SessionId" value="@Model.Sessions.SessionId" />
+            <div>
+                <button type="submit">Create new detail</button>
+            </div>
+        </form>
+    </div>
+
+    <hr />
+
     <h5>Search by Patient</h5>
-    <form action="@Url.Action("FilterByPatient", "Psychologist")" method="post">
-        <div>
+    <div class="search-container">
+        <form action="@Url.Action("FilterByPatient", "Psychologist")" method="post">
             <label for="PatientName" class="form-label">Patient Name</label>
             <input name="PatientName" class="form-control" />
             <input type="hidden" name="SessionId" value="@Model.Sessions.SessionId" />
             <button type="submit">Search</button>
-        </div>
-    </form>
-
-    <h5>Add new Detail</h5>
-    <form action="@Url.Action("CreateHelp", "Psychologist")" method="post">
-        @Html.AntiForgeryToken()
-        <div>
-            <label for="Note" class="form-label">Note</label>
-            <input name="Note" class="form-control"/>
-        </div>
-        <div>
-            <label class="form-label">Patient</label>
-            <select class="form-control" name="PatientId">
-                <option disabled selected value="">Choose patient</option>
-                @foreach (var patient in Model.Patients)
-                {
-                    <option value="@patient.PatientId">@patient.FirstName @patient.LastName</option>
-                }
-            </select>
-        </div>
-        <input type="hidden" name="SessionId" value="@Model.Sessions.SessionId"/>
-        <div>
-            <button type="submit">Create new detail</button>
-        </div>
-    </form>
+        </form>
+    </div>
 
     <hr />
 

@@ -68,3 +68,79 @@ form{
     display: inline-block;
     right: 10px;
 }
+
+.search-container {
+    padding: 20px;
+    margin-top: 20px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.search-container label {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.search-container input[type="text"] {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    flex: 1;
+}
+
+.search-container button[type="submit"] {
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.search-container button[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+.add-detail-container {
+    padding: 20px;
+    margin-top: 20px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+.add-detail-container h5 {
+    margin-bottom: 20px;
+}
+
+.add-detail-container .form-label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.add-detail-container .form-control {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.add-detail-container button[type="submit"] {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.add-detail-container button[type="submit"]:hover {
+    background-color: #45a049;
+}
