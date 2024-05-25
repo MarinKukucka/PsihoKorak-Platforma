@@ -1,0 +1,53 @@
+﻿@model PsihoKorak_Platforma.ViewModels.HelpsViewModelHelper
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor Accessor
+
+@{
+    ViewData["Title"] = "Update";
+}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/css/create.css" />
+    <title>@ViewData["Title"]</title>
+</head>
+
+<body>
+    <header class="header-container">
+        <div class="header-content">
+            <h1 class="display-4">@Accessor.HttpContext.Session.GetString("FirstName") @Accessor.HttpContext.Session.GetString("LastName")</h1>
+            <button type="button" class="logout" onclick="location.href='@Url.Action("Login", "Psychologist")'">Log out</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <form action="@Url.Action("UpdateHelp", "Psychologist")" method="post">
+            @Html.AntiForgeryToken()
+            <h1>Update Detail</h1>
+            <div>
+                <label for="HelpsId" class="form-label">HelpsId</label>
+                <input name="HelpsId" type="hidden" value="@Model.HelpsId" />
+                <input name="DisplayHelpsId" class="form-control" disabled value="@Model.HelpsId" />
+            </div>
+            <div>
+                <label for="Note" class="form-label">Note</label>
+                <input name="Note" class="form-control" type="text" value="@Model.Note" />
+            </div>
+            <div>
+                <label class="form-label">Patient</label>
+                <select class="form-control" name="PatientId">
+                    <option disabled selected value="">Choose patient</option>
+                    @foreach (var patient in ViewBag.Patients)
+                    {
+                        <option value="@patient.Value">@patient.Text</option>
+                    }
+                </select>
+            </div>
+            <div>
+                <button type="submit">Update session</button>
+            </div>
+        </form>
+        <div class="error-message">@ViewData["Error"]</div>
+    </div>
+</body>

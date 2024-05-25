@@ -375,6 +375,17 @@ namespace PsihoKorak_Platforma.Controllers
                                        .ToListAsync();
 
             ViewBag.SessionItems = sessionTypes;
+
+            var petients = await ctx.Patients
+                                    .OrderBy(p => p.PatientId)
+                                    .Select(p => new SelectListItem
+                                    {
+                                        Value = p.PatientId.ToString(),
+                                        Text = p.FirstName + " " + p.LastName
+                                    })
+                                    .ToListAsync();
+
+            ViewBag.Patients = petients;
         }
 
         [HttpPost]
@@ -457,6 +468,74 @@ namespace PsihoKorak_Platforma.Controllers
                 Patients = ctx.Patients.AsNoTracking().ToList(),
                 SessionTypes = ctx.SessionTypes.AsNoTracking().ToList()
             });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DetailUpdate(int HelpsId)
+        {
+            var help = ctx.Helps.Include(h => h.Patient)
+                                .FirstOrDefault(h => h.HelpsId == HelpsId);
+
+            var model = new HelpsViewModelHelper
+            {
+                HelpsId = HelpsId,
+                Note = help.Note,
+                PatientId = help.PatientId,
+                SessionId = help.SessionId,
+                PsychologistId = help.PsychologistId,
+                PatientName = help.Patient.FirstName + " " + help.Patient.LastName
+            };
+
+            await PrepareDropDownList();
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateHelp(int HelpsId, String Note, int PatientId)
+        {
+            var help = ctx.Helps.Find(HelpsId);
+
+            if (help != null)
+            {
+                var sessionId = help.SessionId;
+                help.Note = Note;
+                help.PatientId = PatientId;
+                await ctx.SaveChangesAsync();
+
+                var s = ctx.Sessions.Include(a => a.Helps).Include(b => b.SessionType).FirstOrDefault(v => v.SessionId == sessionId);
+
+                var helps = ctx.Helps.AsNoTracking()
+                                     .Include(v => v.Patient)
+                                     .Where(h => h.SessionId == sessionId)
+                                     .Select(m => new HelpsViewModelHelper
+                                     {
+                                         HelpsId = m.HelpsId,
+                                         Note = m.Note,
+                                         PatientId = m.PatientId,
+                                         SessionId = m.SessionId,
+                                         PsychologistId = m.PsychologistId,
+                                         PatientName = m.Patient.FirstName + m.Patient.LastName
+                                     })
+                                     .ToList();
+
+                return View("Detail", new DetailMasterDetailViewModel
+                {
+                    Sessions = new MDViewModel
+                    {
+                        SessionId = sessionId,
+                        DateTime = s.DateTime.ToString(),
+                        Duration = s.Duration.ToString(),
+                        SessionType = s.SessionType.SessionTypeName,
+                        Helps = s.Helps
+                    },
+                    Helps = helps,
+                    Patients = ctx.Patients.AsNoTracking().ToList(),
+                    SessionTypes = ctx.SessionTypes.AsNoTracking().ToList()
+                });
+            }
+
+            return NotFound();
         }
 
         [HttpPost]

@@ -39,7 +39,7 @@
                 <input name="Duration" class="form-control" type="number" min="0" value="@TimeSpan.Parse(Model.Duration).TotalMinutes" />
             </div>
             <div>
-                <label class="form-label">Tip sesije</label>
+                <label class="form-label">Session type</label>
                 <select class="form-control" name="SessionTypeId">
                     <option disabled selected value="">Choose session type</option>
                     @foreach (var sessionType in ViewBag.SessionItems)
