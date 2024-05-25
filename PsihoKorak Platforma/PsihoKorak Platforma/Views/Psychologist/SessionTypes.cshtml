@@ -16,6 +16,8 @@
 <body>
     <header class="header-container">
         <div class="header-content">
+            <button type="button" class="logout" onclick="location.href='@Url.Action("Index", "PSychologist")'">Home</button>
+            <button type="button" class="logout" onclick="location.href='@Url.Action("SessionTypes", "Psychologist")'">Session types</button>
             <h1 class="display-4">@Accessor.HttpContext.Session.GetString("FirstName") @Accessor.HttpContext.Session.GetString("LastName")</h1>
             <button type="button" class="logout" onclick="location.href='@Url.Action("Logout", "Psychologist")'">Log out</button>
         </div>
@@ -50,39 +52,41 @@
 
     <hr />
 
-    <h5>Session types</h5>
-    <table>
-        <thead>
-            <tr>
-                <th>
-                    #
-                </th>
-                <th>
-                    Session type name
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var sessionType in Model.sessionTypes)
-            {
+    <div class="table-container">
+        <h5>Session types</h5>
+        <table>
+            <thead>
                 <tr>
-                    <td>@sessionType.SessionTypeId</td>
-                    <td>@sessionType.SessionTypeName</td>
-                    <td>
-                        <form action="@Url.Action("SessionTypeUpdate", "Psychologist")" method="post">
-                            <input type="hidden" name="SessionTypeId" value="@sessionType.SessionTypeId" />
-                            <button type="submit">Update</button>
-                        </form>
-
-                        <form action="@Url.Action("DeleteSessionType", "Psychologist")" method="post">
-                            <input type="hidden" name="SessionTypeId" value="@sessionType.SessionTypeId" />
-                            <button type="submit">Delete</button>
-                        </form>
-                    </td>
+                    <th>
+                        #
+                    </th>
+                    <th>
+                        Session type name
+                    </th>
+                    <th></th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var sessionType in Model.sessionTypes)
+                {
+                    <tr>
+                        <td>@sessionType.SessionTypeId</td>
+                        <td>@sessionType.SessionTypeName</td>
+                        <td>
+                            <form action="@Url.Action("SessionTypeUpdate", "Psychologist")" method="post">
+                                <input type="hidden" name="SessionTypeId" value="@sessionType.SessionTypeId" />
+                                <button type="submit">Update</button>
+                            </form>
+
+                            <form action="@Url.Action("DeleteSessionType", "Psychologist")" method="post">
+                                <input type="hidden" name="SessionTypeId" value="@sessionType.SessionTypeId" />
+                                <button type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
     <div class="error-message">@ViewData["Error"]</div>
 </body>

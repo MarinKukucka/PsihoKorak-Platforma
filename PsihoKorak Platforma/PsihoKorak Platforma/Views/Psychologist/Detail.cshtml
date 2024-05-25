@@ -16,6 +16,8 @@
 <body>
     <header class="header-container">
         <div class="header-content">
+            <button type="button" class="logout" onclick="location.href='@Url.Action("Index", "PSychologist")'">Home</button>
+            <button type="button" class="logout" onclick="location.href='@Url.Action("SessionTypes", "Psychologist")'">Session types</button>
             <h1 class="display-4">@Accessor.HttpContext.Session.GetString("FirstName") @Accessor.HttpContext.Session.GetString("LastName")</h1>
             <button type="button" class="logout" onclick="location.href='@Url.Action("Logout", "Psychologist")'">Log out</button>
         </div>
@@ -62,42 +64,44 @@
 
     <hr />
 
-    <h5>Details in session</h5>
-    <table>
-        <thead>
-            <tr>
-                <th>
-                    #
-                </th>
-                <th>
-                    Note
-                </th>
-                <th>
-                    Patient
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach(var help in Model.Helps)
-            {
+    <div class="table-container">
+        <h5>Details in session</h5>
+        <table>
+            <thead>
                 <tr>
-                    <td>@help.HelpsId</td>
-                    <td>@help.Note</td>
-                    <td>@help.PatientName</td>
-                    <td>
-                        <form action="@Url.Action("DetailUpdate", "Psychologist")" method="post">
-                            <input type="hidden" name="HelpsId" value="@help.HelpsId" />
-                            <button type="submit">Update</button>
-                        </form>
-
-                        <form action="@Url.Action("DeleteHelp", "Psychologist")" method="post">
-                            <input type="hidden" name="HelpsId" value="@help.HelpsId" />
-                            <button type="submit">Delete</button>
-                        </form>
-                    </td>
+                    <th>
+                        #
+                    </th>
+                    <th>
+                        Note
+                    </th>
+                    <th>
+                        Patient
+                    </th>
+                    <th></th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var help in Model.Helps)
+                {
+                    <tr>
+                        <td>@help.HelpsId</td>
+                        <td>@help.Note</td>
+                        <td>@help.PatientName</td>
+                        <td>
+                            <form action="@Url.Action("DetailUpdate", "Psychologist")" method="post">
+                                <input type="hidden" name="HelpsId" value="@help.HelpsId" />
+                                <button type="submit">Update</button>
+                            </form>
+
+                            <form action="@Url.Action("DeleteHelp", "Psychologist")" method="post">
+                                <input type="hidden" name="HelpsId" value="@help.HelpsId" />
+                                <button type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </body>
