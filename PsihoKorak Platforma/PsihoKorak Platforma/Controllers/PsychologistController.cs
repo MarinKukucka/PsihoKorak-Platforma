@@ -392,11 +392,9 @@ namespace PsihoKorak_Platforma.Controllers
                                      PatientId = m.PatientId,
                                      SessionId = m.SessionId,
                                      PsychologistId = m.PsychologistId,
-                                     PatienttName = m.Patient.FirstName + m.Patient.LastName
+                                     PatientName = m.Patient.FirstName + m.Patient.LastName
                                  })
                                  .ToList();
-
-            Console.WriteLine(SessionId);
 
             return View(new DetailMasterDetailViewModel
             {
@@ -429,7 +427,82 @@ namespace PsihoKorak_Platforma.Controllers
             ctx.Add(help);
             await ctx.SaveChangesAsync();
 
-            return View("Index");
+            var s = ctx.Sessions.Include(a => a.Helps).Include(b => b.SessionType).FirstOrDefault(v => v.SessionId == SessionId);
+
+            var helps = ctx.Helps.AsNoTracking()
+                                 .Include(v => v.Patient)
+                                 .Where(h => h.SessionId == SessionId)
+                                 .Select(m => new HelpsViewModelHelper
+                                 {
+                                     HelpsId = m.HelpsId,
+                                     Note = m.Note,
+                                     PatientId = m.PatientId,
+                                     SessionId = m.SessionId,
+                                     PsychologistId = m.PsychologistId,
+                                     PatientName = m.Patient.FirstName + m.Patient.LastName
+                                 })
+                                 .ToList();
+
+            return View("Detail", new DetailMasterDetailViewModel
+            {
+                Sessions = new MDViewModel
+                {
+                    SessionId = SessionId,
+                    DateTime = s.DateTime.ToString(),
+                    Duration = s.Duration.ToString(),
+                    SessionType = s.SessionType.SessionTypeName,
+                    Helps = s.Helps
+                },
+                Helps = helps,
+                Patients = ctx.Patients.AsNoTracking().ToList(),
+                SessionTypes = ctx.SessionTypes.AsNoTracking().ToList()
+            });
+        }
+
+        [HttpPost]
+        public IActionResult DeleteHelp(int HelpsId)
+        {
+            var help = ctx.Helps.Find(HelpsId);
+
+            if(help != null)
+            {
+                var sessionId = help.SessionId;
+                ctx.Remove(help);
+                ctx.SaveChanges();
+
+                var s = ctx.Sessions.Include(a => a.Helps).Include(b => b.SessionType).FirstOrDefault(v => v.SessionId == sessionId);
+
+                var helps = ctx.Helps.AsNoTracking()
+                                     .Include(v => v.Patient)
+                                     .Where(h => h.SessionId == sessionId)
+                                     .Select(m => new HelpsViewModelHelper
+                                     {
+                                         HelpsId = m.HelpsId,
+                                         Note = m.Note,
+                                         PatientId = m.PatientId,
+                                         SessionId = m.SessionId,
+                                         PsychologistId = m.PsychologistId,
+                                         PatientName = m.Patient.FirstName + m.Patient.LastName
+                                     })
+                                     .ToList();
+
+                return View("Detail", new DetailMasterDetailViewModel
+                {
+                    Sessions = new MDViewModel
+                    {
+                        SessionId = sessionId,
+                        DateTime = s.DateTime.ToString(),
+                        Duration = s.Duration.ToString(),
+                        SessionType = s.SessionType.SessionTypeName,
+                        Helps = s.Helps
+                    },
+                    Helps = helps,
+                    Patients = ctx.Patients.AsNoTracking().ToList(),
+                    SessionTypes = ctx.SessionTypes.AsNoTracking().ToList()
+                });
+            }
+
+            return NotFound();
         }
     }
 }
