@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using PsihoKorak_Platforma.Models;
 using PsihoKorak_Platforma.Utils;
 using PsihoKorak_Platforma.ViewModels;
+using System.Text.RegularExpressions;
 
 namespace PsihoKorak_Platforma.Controllers
 {
@@ -114,12 +115,27 @@ namespace PsihoKorak_Platforma.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RegisterPsychologist(String FirstName, String LastName, String Email, String Password)
         {
+            if(String.IsNullOrWhiteSpace(Email) || !Regex.IsMatch(Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+            {
+                ViewData["Error"] = "Invalid email format";
+                return View("Register");
+            }
+
             var psythologistToCheck = await ctx.Psychologists.AsNoTracking()
                                                              .FirstOrDefaultAsync(p => p.Email == Email);
 
             if (psythologistToCheck != null)
             {
                 ViewData["Error"] = "Email is already in use";
+                return View("Register");
+            }
+
+            if (String.IsNullOrWhiteSpace(Password) || Password.Length < 8 || !Regex.IsMatch(Password, @"[A-Z]") ||
+                                                                              !Regex.IsMatch(Password, @"[a-z]") ||
+                                                                              !Regex.IsMatch(Password, @"[0-9]") ||
+                                                                              !Regex.IsMatch(Password, @"[\W_]"))
+            {
+                ViewData["Error"] = "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character";
                 return View("Register");
             }
 
@@ -462,6 +478,18 @@ namespace PsihoKorak_Platforma.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateHelp(String Note, int PatientId, int SessionId)
         {
+            var session = await ctx.Sessions.Include(s => s.SessionType)
+                                            .Include(s => s.Helps)
+                                            .FirstOrDefaultAsync(s => s.SessionId == SessionId);
+
+            int patientCount = session.Helps.Select(h => h.PatientId).Distinct().Count();
+
+            if(session.SessionType.SessionTypeName != "Grupna sesija" && patientCount > 0)
+            {
+                ViewData["Error"] = "Only one patient can be added to a non-group session";
+                return View("Detail", await PrepareDetailViewModel(SessionId));
+            }
+
             var help = new Help
             {
                 Note = Note,
@@ -473,36 +501,43 @@ namespace PsihoKorak_Platforma.Controllers
             ctx.Add(help);
             await ctx.SaveChangesAsync();
 
-            var s = ctx.Sessions.Include(a => a.Helps).Include(b => b.SessionType).FirstOrDefault(v => v.SessionId == SessionId);
+            return View("Detail", await PrepareDetailViewModel(SessionId));
+        }
 
-            var helps = ctx.Helps.AsNoTracking()
-                                 .Include(v => v.Patient)
-                                 .Where(h => h.SessionId == SessionId)
-                                 .Select(m => new HelpsViewModelHelper
-                                 {
-                                     HelpsId = m.HelpsId,
-                                     Note = m.Note,
-                                     PatientId = m.PatientId,
-                                     SessionId = m.SessionId,
-                                     PsychologistId = m.PsychologistId,
-                                     PatientName = m.Patient.FirstName + m.Patient.LastName
-                                 })
-                                 .ToList();
+        private async Task<DetailMasterDetailViewModel> PrepareDetailViewModel(int sessionId)
+        {
+            var s = await ctx.Sessions.Include(a => a.Helps)
+                                      .Include(b => b.SessionType)
+                                      .FirstOrDefaultAsync(v => v.SessionId == sessionId);
 
-            return View("Detail", new DetailMasterDetailViewModel
+            var helps = await ctx.Helps.AsNoTracking()
+                                       .Include(v => v.Patient)
+                                       .Where(h => h.SessionId == sessionId)
+                                       .Select(m => new HelpsViewModelHelper
+                                       {
+                                           HelpsId = m.HelpsId,
+                                           Note = m.Note,
+                                           PatientId = m.PatientId,
+                                           SessionId = m.SessionId,
+                                           PsychologistId = m.PsychologistId,
+                                           PatientName = m.Patient.FirstName + m.Patient.LastName
+                                       })
+                                       .ToListAsync();
+
+            return new DetailMasterDetailViewModel
             {
                 Sessions = new MDViewModel
                 {
-                    SessionId = SessionId,
+                    SessionId = s.SessionId,
                     DateTime = s.DateTime.ToString(),
                     Duration = s.Duration.ToString(),
                     SessionType = s.SessionType.SessionTypeName,
                     Helps = s.Helps
                 },
                 Helps = helps,
-                Patients = ctx.Patients.AsNoTracking().ToList(),
-                SessionTypes = ctx.SessionTypes.AsNoTracking().ToList()
-            });
+                Patients = await ctx.Patients.AsNoTracking().ToListAsync(),
+                SessionTypes = await ctx.SessionTypes.AsNoTracking().ToListAsync()
+            };
         }
 
         [HttpPost]
