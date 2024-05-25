@@ -57,7 +57,10 @@
                         <td>@session.Duration</td>
                         <td>@session.SessionType</td>
                         <td>
-                            <button>Detail</button>
+                            <form action="@Url.Action("Detail", "Psychologist")" method="post">
+                                <input type="hidden" name="SessionId" value="@session.SessionId" />
+                                <button type="submit">Detail</button>
+                            </form>
                             <form action="@Url.Action("Update", "Psychologist")" method="post">
                                 <input type="hidden" name="SessionId" value="@session.SessionId" />
                                 <button type="submit">Update</button>

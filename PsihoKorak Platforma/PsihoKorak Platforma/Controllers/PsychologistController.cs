@@ -376,5 +376,60 @@ namespace PsihoKorak_Platforma.Controllers
 
             ViewBag.SessionItems = sessionTypes;
         }
+
+        [HttpPost]
+        public IActionResult Detail(int SessionId)
+        {
+            var s = ctx.Sessions.Include(a => a.Helps).Include(b => b.SessionType).FirstOrDefault(v => v.SessionId == SessionId);
+
+            var helps = ctx.Helps.AsNoTracking()
+                                 .Include(v => v.Patient)
+                                 .Where(h => h.SessionId == SessionId)
+                                 .Select(m => new HelpsViewModelHelper
+                                 {
+                                     HelpsId = m.HelpsId,
+                                     Note = m.Note,
+                                     PatientId = m.PatientId,
+                                     SessionId = m.SessionId,
+                                     PsychologistId = m.PsychologistId,
+                                     PatienttName = m.Patient.FirstName + m.Patient.LastName
+                                 })
+                                 .ToList();
+
+            Console.WriteLine(SessionId);
+
+            return View(new DetailMasterDetailViewModel
+            {
+                Sessions = new MDViewModel
+                {
+                    SessionId = SessionId,
+                    DateTime = s.DateTime.ToString(),
+                    Duration = s.Duration.ToString(),
+                    SessionType = s.SessionType.SessionTypeName,
+                    Helps = s.Helps
+                },
+                Helps = helps,
+                Patients = ctx.Patients.AsNoTracking().ToList(),
+                SessionTypes = ctx.SessionTypes.AsNoTracking().ToList()
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateHelp(String Note, int PatientId, int SessionId)
+        {
+            var help = new Help
+            {
+                Note = Note,
+                PatientId = PatientId,
+                SessionId = SessionId,
+                PsychologistId = int.Parse(HttpContext.Session.GetString("Id"))
+            };
+
+            ctx.Add(help);
+            await ctx.SaveChangesAsync();
+
+            return View("Index");
+        }
     }
 }

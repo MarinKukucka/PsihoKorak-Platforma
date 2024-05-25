@@ -1,0 +1,89 @@
+﻿@model PsihoKorak_Platforma.ViewModels.DetailMasterDetailViewModel
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor Accessor
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/css/index.css" />
+    <title>@ViewData["Title"]</title>
+</head>
+
+<body>
+    <header class="header-container">
+        <div class="header-content">
+            <h1 class="display-4">@Accessor.HttpContext.Session.GetString("FirstName") @Accessor.HttpContext.Session.GetString("LastName")</h1>
+            <button type="button" class="logout" onclick="location.href='@Url.Action("Login", "Psychologist")'">Log out</button>
+        </div>
+    </header>
+    
+    <hr />
+
+    <h5>Add new Detail</h5>
+    <form action="@Url.Action("CreateHelp", "Psychologist")" method="post">
+        @Html.AntiForgeryToken()
+        <div>
+            <label for="Note" class="form-label">Note</label>
+            <input name="Note" class="form-control"/>
+        </div>
+        <div>
+            <label class="form-label">Patient</label>
+            <select class="form-control" name="PatientId">
+                <option disabled selected value="">Choose patient</option>
+                @foreach (var patient in Model.Patients)
+                {
+                    <option value="@patient.PatientId">@patient.FirstName @patient.LastName</option>
+                }
+            </select>
+        </div>
+        <input type="hidden" name="SessionId" value="@Model.Sessions.SessionId"/>
+        <div>
+            <button type="submit">Create new detail</button>
+        </div>
+    </form>
+
+    <hr />
+
+    <h5>Details in session</h5>
+    <table>
+        <thead>
+            <tr>
+                <th>
+                    #
+                </th>
+                <th>
+                    Note
+                </th>
+                <th>
+                    Patient
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var help in Model.Helps)
+            {
+                <tr>
+                    <td>@help.HelpsId</td>
+                    <td>@help.Note</td>
+                    <td>@help.PatientName</td>
+                    <td>
+                        <form action="@Url.Action("UpdateHelp", "Psychologist")" method="post">
+                            <input type="hidden" name="HelpsId" value="@help.HelpsId" />
+                            <button type="submit">Update</button>
+                        </form>
+
+                        <form action="@Url.Action("DeleteHelp", "Psychologist")" method="post">
+                            <input type="hidden" name="HelpsId" value="@help.HelpsId" />
+                            <button type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
