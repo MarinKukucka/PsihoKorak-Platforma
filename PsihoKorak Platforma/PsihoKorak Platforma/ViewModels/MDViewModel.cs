@@ -7,6 +7,7 @@ namespace PsihoKorak_Platforma.ViewModels
         public int SessionId { get; set; }
         public string DateTime { get; set; }
         public string Duration { get; set; }
+        public string SessionType { get; set; }
         public IEnumerable<Help> Helps { get; set; }
     }
 }

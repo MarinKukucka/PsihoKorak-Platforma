@@ -63,3 +63,8 @@ table th {
     border-radius: 5px;
     border-width: 0px;
 }
+
+form{
+    display: inline-block;
+    right: 10px;
+}

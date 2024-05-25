@@ -31,6 +31,7 @@ namespace PsihoKorak_Platforma.Controllers
             {
                 var query = ctx.Sessions.AsNoTracking()
                                         .Where(s => s.Helps.Any(h => h.PsychologistId == psychologistId))
+                                        .Include(s => s.SessionType)
                                         .ToList();
 
                 var sessions = query.Select(s => new MDViewModel
@@ -38,7 +39,8 @@ namespace PsihoKorak_Platforma.Controllers
                     SessionId = s.SessionId,
                     DateTime = s.DateTime.ToString(),
                     Duration = s.Duration.ToString(),
-                    Helps = s.Helps
+                    Helps = s.Helps,
+                    SessionType = s.SessionType.SessionTypeName
                 }).ToList();
 
                 var model = new ListMDViewModel
@@ -151,6 +153,39 @@ namespace PsihoKorak_Platforma.Controllers
             }
         }
 
+        [HttpPost]
+        public IActionResult FilterSessionsByType(String SessionType)
+        {
+            if (int.TryParse(HttpContext.Session.GetString("Id"), out int psychologistId))
+            {
+                var query = ctx.Sessions.AsNoTracking()
+                                        .Where(s => s.Helps.Any(h => h.PsychologistId == psychologistId))
+                                        .Where(s => s.SessionType.SessionTypeName.Contains(SessionType))
+                                        .Include(s => s.SessionType)
+                                        .ToList();
+
+                var sessions = query.Select(s => new MDViewModel
+                {
+                    SessionId = s.SessionId,
+                    DateTime = s.DateTime.ToString(),
+                    Duration = s.Duration.ToString(),
+                    Helps = s.Helps,
+                    SessionType = s.SessionType.SessionTypeName
+                }).ToList();
+
+                var model = new ListMDViewModel
+                {
+                    Md = sessions,
+                };
+
+                return View("Index", model);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> Create()
         {
@@ -195,6 +230,7 @@ namespace PsihoKorak_Platforma.Controllers
 
                 var query = ctx.Sessions.AsNoTracking()
                                         .Where(s => s.Helps.Any(h => h.PsychologistId == int.Parse(HttpContext.Session.GetString("Id"))))
+                                        .Include(s => s.SessionType)
                                         .ToList();
 
                 var sessions = query.Select(s => new MDViewModel
@@ -202,7 +238,8 @@ namespace PsihoKorak_Platforma.Controllers
                     SessionId = s.SessionId,
                     DateTime = s.DateTime.ToString(),
                     Duration = s.Duration.ToString(),
-                    Helps = s.Helps
+                    Helps = s.Helps,
+                    SessionType = s.SessionType.SessionTypeName
                 }).ToList();
 
                 var model = new ListMDViewModel
@@ -217,6 +254,113 @@ namespace PsihoKorak_Platforma.Controllers
                 await PrepareDropDownList();
                 return View("Create");
             }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Update(int SessionId)
+        {
+            if (HttpContext.Session.GetString("Id") == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            var session = ctx.Sessions.Include(s => s.SessionType)
+                                      .FirstOrDefault(s => s.SessionId == SessionId);
+
+            var model = new MDViewModel
+            {
+                SessionId = SessionId,
+                DateTime = session.DateTime.ToString(),
+                Duration = session.Duration.ToString(),
+                Helps = session.Helps,
+                SessionType = session.SessionType.SessionTypeName
+            };
+
+            await PrepareDropDownList();
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateSession(int SessionId, DateTime Date, int Duration, String SessionTypeId)
+        {
+            var session = ctx.Sessions.Find(SessionId);
+
+            if (session != null)
+            {
+                session.DateTime = Date;
+                session.Duration = TimeSpan.FromMinutes(Duration);
+                session.SessionTypeId = int.Parse(SessionTypeId);
+                await ctx.SaveChangesAsync();
+            }
+
+            var query = ctx.Sessions.AsNoTracking()
+                                        .Where(s => s.Helps.Any(h => h.PsychologistId == int.Parse(HttpContext.Session.GetString("Id"))))
+                                        .Include(s => s.SessionType)
+                                        .ToList();
+
+            var sessions = query.Select(s => new MDViewModel
+            {
+                SessionId = s.SessionId,
+                DateTime = s.DateTime.ToString(),
+                Duration = s.Duration.ToString(),
+                Helps = s.Helps,
+                SessionType = s.SessionType.SessionTypeName
+            }).ToList();
+
+            var model = new ListMDViewModel
+            {
+                Md = sessions,
+            };
+
+            return View(nameof(Index), model);
+        }
+
+        [HttpPost]
+        public IActionResult DeleteSession(int SessionId)
+        {
+            var session = ctx.Sessions.Find(SessionId);
+
+            var helps = ctx.Helps.Where(h => h.SessionId == SessionId)
+                                 .ToList();
+
+            foreach(var help in helps)
+            {
+                var helpId = help.HelpsId;
+                var helpToDelete = ctx.Helps.Find(helpId);
+                if(helpToDelete != null)
+                {
+                    ctx.Remove(helpToDelete);
+                    ctx.SaveChanges();
+                }
+            }
+
+            if(session != null)
+            {
+                ctx.Remove(session);
+                ctx.SaveChanges();
+            }
+
+            var query = ctx.Sessions.AsNoTracking()
+                                        .Where(s => s.Helps.Any(h => h.PsychologistId == int.Parse(HttpContext.Session.GetString("Id"))))
+                                        .Include(s => s.SessionType)
+                                        .ToList();
+
+            var sessions = query.Select(s => new MDViewModel
+            {
+                SessionId = s.SessionId,
+                DateTime = s.DateTime.ToString(),
+                Duration = s.Duration.ToString(),
+                Helps = s.Helps,
+                SessionType = s.SessionType.SessionTypeName
+            }).ToList();
+
+            var model = new ListMDViewModel
+            {
+                Md = sessions,
+            };
+
+            return View(nameof(Index), model);
         }
 
         private async Task PrepareDropDownList()

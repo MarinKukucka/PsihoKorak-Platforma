@@ -1,8 +1,9 @@
-﻿@using Microsoft.AspNetCore.Http
+﻿@model PsihoKorak_Platforma.ViewModels.MDViewModel
+@using Microsoft.AspNetCore.Http
 @inject IHttpContextAccessor Accessor
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Update";
 }
 
 <head>
@@ -21,20 +22,25 @@
     </header>
 
     <div class="container">
-        <form action="@Url.Action("CreateSession", "Psychologist")" method="post">
+        <form action="@Url.Action("UpdateSession", "Psychologist")" method="post">
             @Html.AntiForgeryToken()
-            <h1>New session</h1>
+            <h1>Update session</h1>
+            <div>
+                <label for="SessionId" class="form-label">SessionId</label>
+                <input name="SessionId" type="hidden" value="@Model.SessionId" />
+                <input name="DisplaySessionId" class="form-control" disabled value="@Model.SessionId"/>
+            </div>
             <div>
                 <label for="Date" class="form-label">Date and time</label>
-                <input name="Date" class="form-control" type="datetime-local"/>
+                <input name="Date" class="form-control" type="datetime-local" value="@DateTime.Parse(Model.DateTime).ToString("yyyy-MM-ddTHH:mm")" />
             </div>
             <div>
                 <label for="Duration" class="form-label">Duration in minutes</label>
-                <input name="Duration" class="form-control" type="number" min="0"/>
+                <input name="Duration" class="form-control" type="number" min="0" value="@TimeSpan.Parse(Model.Duration).TotalMinutes" />
             </div>
             <div>
                 <label class="form-label">Tip sesije</label>
-                <select class="form-control" name="SessionTypeId" >
+                <select class="form-control" name="SessionTypeId">
                     <option disabled selected value="">Choose session type</option>
                     @foreach (var sessionType in ViewBag.SessionItems)
                     {
@@ -43,7 +49,7 @@
                 </select>
             </div>
             <div>
-                <button type="submit">Create new session</button>
+                <button type="submit">Update session</button>
             </div>
         </form>
         <div class="error-message">@ViewData["Error"]</div>
