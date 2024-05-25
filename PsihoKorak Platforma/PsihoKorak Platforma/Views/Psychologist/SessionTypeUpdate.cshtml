@@ -1,0 +1,43 @@
+﻿@model PsihoKorak_Platforma.ViewModels.SessionTypeViewModel
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor Accessor
+
+@{
+    ViewData["Title"] = "Update";
+}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/css/create.css" />
+    <title>@ViewData["Title"]</title>
+</head>
+
+<body>
+    <header class="header-container">
+        <div class="header-content">
+            <h1 class="display-4">@Accessor.HttpContext.Session.GetString("FirstName") @Accessor.HttpContext.Session.GetString("LastName")</h1>
+            <button type="button" class="logout" onclick="location.href='@Url.Action("Logout", "Psychologist")'">Log out</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <form action="@Url.Action("UpdateSessionType", "Psychologist")" method="post">
+            @Html.AntiForgeryToken()
+            <h1>Update session type</h1>
+            <div>
+                <label for="SessionTypeId" class="form-label">SessionTypeId</label>
+                <input name="SessionTypeId" type="hidden" value="@Model.SessionTypeId" />
+                <input name="DisplaySessionTypeId" class="form-control" disabled value="@Model.SessionTypeId" />
+            </div>
+            <div>
+                <label for="SessionTypeName" class="form-label">Name</label>
+                <input name="SessionTypeName" class="form-control" type="text" value="@Model.SessionTypeName" />
+            </div>
+            <div>
+                <button type="submit">Update session type</button>
+            </div>
+        </form>
+        <div class="error-message">@ViewData["Error"]</div>
+    </div>
+</body>

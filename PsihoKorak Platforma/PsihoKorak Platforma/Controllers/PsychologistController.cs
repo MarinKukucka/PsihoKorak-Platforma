@@ -5,6 +5,7 @@ using PsihoKorak_Platforma.Models;
 using PsihoKorak_Platforma.Utils;
 using PsihoKorak_Platforma.ViewModels;
 using System.Text.RegularExpressions;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace PsihoKorak_Platforma.Controllers
 {
@@ -657,6 +658,127 @@ namespace PsihoKorak_Platforma.Controllers
             }
 
             return NotFound();
+        }
+
+        public IActionResult SessionTypes()
+        {
+            var query = ctx.SessionTypes.AsNoTracking()
+                                        .ToList();
+
+            var st = query.Select(s => new SessionTypeViewModel
+            {
+                SessionTypeId = s.SessionTypeId,
+                SessionTypeName = s.SessionTypeName
+            }).ToList();
+
+            var model = new ListSessionTypeViewModel
+            {
+                sessionTypes = st
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateSessionType(String SessionTypeName)
+        {
+            var sessionType = new SessionType
+            {
+                SessionTypeName = SessionTypeName
+            };
+
+            ctx.SessionTypes.Add(sessionType);
+            await ctx.SaveChangesAsync();
+
+            return RedirectToAction("sessionTypes");
+        }
+
+        [HttpPost]
+        public IActionResult DeleteSessionType(int SessionTypeId)
+        {
+            var sessionType = ctx.SessionTypes.Find(SessionTypeId);
+            var isForeignKey = ctx.Sessions.Any(s => s.SessionTypeId == SessionTypeId);
+
+            if(sessionType != null && !isForeignKey)
+            {
+                ctx.Remove(sessionType);
+                ctx.SaveChanges();
+
+                return RedirectToAction("sessionTypes");
+            }
+
+            ViewData["Error"] = "Cannot delete because it is foreign key";
+            return RedirectToAction("sessionTypes");
+        }
+
+        [HttpPost]
+        public IActionResult FilterBySessionType(String SessionTypeName)
+        {
+            if(!String.IsNullOrEmpty(SessionTypeName))
+            {
+                var query = ctx.SessionTypes.Where(st => st.SessionTypeName.Contains(SessionTypeName))
+                                            .ToList();
+
+                var st = query.Select(s => new SessionTypeViewModel
+                {
+                    SessionTypeId = s.SessionTypeId,
+                    SessionTypeName = s.SessionTypeName
+                }).ToList();
+
+                var model = new ListSessionTypeViewModel
+                {
+                    sessionTypes = st
+                };
+
+                return View("SessionTypes", model);
+            }
+            else
+            {
+                var query = ctx.SessionTypes.ToList();
+
+                var st = query.Select(s => new SessionTypeViewModel
+                {
+                    SessionTypeId = s.SessionTypeId,
+                    SessionTypeName = s.SessionTypeName
+                }).ToList();
+
+                var model = new ListSessionTypeViewModel
+                {
+                    sessionTypes = st
+                };
+
+                return View("SessionTypes", model);
+            }
+        }
+
+        [HttpPost]
+        public IActionResult SessionTypeUpdate(int SessionTypeId)
+        {
+            var sessionType = ctx.SessionTypes.FirstOrDefault(st => st.SessionTypeId == SessionTypeId);
+
+            var model = new SessionTypeViewModel
+            {
+                SessionTypeId = SessionTypeId,
+                SessionTypeName = sessionType.SessionTypeName
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult UpdateSessionType(int SessionTypeId, String SessionTypeName)
+        {
+            var sessionType = ctx.SessionTypes.Find(SessionTypeId);
+
+            if(sessionType != null)
+            {
+                sessionType.SessionTypeName = SessionTypeName;
+                ctx.SaveChanges();
+
+                return RedirectToAction("SessionTypes");
+            }
+
+            return BadRequest();
         }
     }
 }

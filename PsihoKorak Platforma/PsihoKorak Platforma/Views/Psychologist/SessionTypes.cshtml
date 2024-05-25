@@ -1,0 +1,88 @@
+﻿@model PsihoKorak_Platforma.ViewModels.ListSessionTypeViewModel
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor Accessor
+
+@{
+    ViewData["Title"] = "Session types";
+}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/css/index.css" />
+    <title>@ViewData["Title"]</title>
+</head>
+
+<body>
+    <header class="header-container">
+        <div class="header-content">
+            <h1 class="display-4">@Accessor.HttpContext.Session.GetString("FirstName") @Accessor.HttpContext.Session.GetString("LastName")</h1>
+            <button type="button" class="logout" onclick="location.href='@Url.Action("Logout", "Psychologist")'">Log out</button>
+        </div>
+    </header>
+
+    <hr />
+
+    <h5>Add new session type</h5>
+    <div class="add-detail-container">
+        <form action="@Url.Action("CreateSessionType", "Psychologist")" method="post">
+            @Html.AntiForgeryToken()
+            <div>
+                <label for="SessionTypeName" class="form-label">Note</label>
+                <input name="SessionTypeName" class="form-control" />
+            </div>
+            <div>
+                <button type="submit">Create new session type</button>
+            </div>
+        </form>
+    </div>
+
+    <hr />
+
+    <h5>Search by session type</h5>
+    <div class="search-container">
+        <form action="@Url.Action("FilterBySessionType", "Psychologist")" method="post">
+            <label for="SessionTypeName" class="form-label">Session type</label>
+            <input name="SessionTypeName" class="form-control" />
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+    <hr />
+
+    <h5>Session types</h5>
+    <table>
+        <thead>
+            <tr>
+                <th>
+                    #
+                </th>
+                <th>
+                    Session type name
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var sessionType in Model.sessionTypes)
+            {
+                <tr>
+                    <td>@sessionType.SessionTypeId</td>
+                    <td>@sessionType.SessionTypeName</td>
+                    <td>
+                        <form action="@Url.Action("SessionTypeUpdate", "Psychologist")" method="post">
+                            <input type="hidden" name="SessionTypeId" value="@sessionType.SessionTypeId" />
+                            <button type="submit">Update</button>
+                        </form>
+
+                        <form action="@Url.Action("DeleteSessionType", "Psychologist")" method="post">
+                            <input type="hidden" name="SessionTypeId" value="@sessionType.SessionTypeId" />
+                            <button type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="error-message">@ViewData["Error"]</div>
+</body>
