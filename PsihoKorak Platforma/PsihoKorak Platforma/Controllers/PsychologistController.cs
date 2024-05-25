@@ -10,7 +10,7 @@ namespace PsihoKorak_Platforma.Controllers
 {
     public class PsychologistController : Controller
     {
-        private readonly PsihoKorakPlatformaContext ctx;
+        private readonly PsihoKorakPlatformaContext? ctx;
 
         public PsychologistController(PsihoKorakPlatformaContext ctx)
         {
@@ -59,13 +59,6 @@ namespace PsihoKorak_Platforma.Controllers
 
         public IActionResult Login()
         {
-            HttpContext.Session.Clear();
-            HttpContext.Response.Cookies.Append("SessionName", "", new CookieOptions
-            {
-                Expires = DateTime.Now.AddDays(-1)
-            });
-            HttpContext.Response.Cookies.Delete("SessionName");
-
             return View();
         }
 
@@ -96,6 +89,18 @@ namespace PsihoKorak_Platforma.Controllers
             }
 
             ViewData["Error"] = "Wrong email or password";
+            return View("Login");
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            HttpContext.Response.Cookies.Append("SessionName", "", new CookieOptions
+            {
+                Expires = DateTime.Now.AddDays(-1)
+            });
+            HttpContext.Response.Cookies.Delete("SessionName");
+
             return View("Login");
         }
 

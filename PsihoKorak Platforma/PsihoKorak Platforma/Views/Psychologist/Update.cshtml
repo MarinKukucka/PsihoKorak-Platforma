@@ -17,7 +17,7 @@
     <header class="header-container">
         <div class="header-content">
             <h1 class="display-4">@Accessor.HttpContext.Session.GetString("FirstName") @Accessor.HttpContext.Session.GetString("LastName")</h1>
-            <button type="button" class="logout" onclick="location.href='@Url.Action("Login", "Psychologist")'">Log out</button>
+            <button type="button" class="logout" onclick="location.href='@Url.Action("Logout", "Psychologist")'">Log out</button>
         </div>
     </header>
 

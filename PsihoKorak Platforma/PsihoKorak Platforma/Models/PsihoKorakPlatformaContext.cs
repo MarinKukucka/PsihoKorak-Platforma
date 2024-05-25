@@ -8,6 +8,11 @@ namespace PsihoKorak_Platforma.Models;
 
 public partial class PsihoKorakPlatformaContext : DbContext
 {
+    public PsihoKorakPlatformaContext()
+    {
+
+    }
+
     public PsihoKorakPlatformaContext(DbContextOptions<PsihoKorakPlatformaContext> options)
         : base(options)
     {
