@@ -23,6 +23,16 @@
     
     <hr />
 
+    <h5>Search by Patient</h5>
+    <form action="@Url.Action("FilterByPatient", "Psychologist")" method="post">
+        <div>
+            <label for="PatientName" class="form-label">Patient Name</label>
+            <input name="PatientName" class="form-control" />
+            <input type="hidden" name="SessionId" value="@Model.Sessions.SessionId" />
+            <button type="submit">Search</button>
+        </div>
+    </form>
+
     <h5>Add new Detail</h5>
     <form action="@Url.Action("CreateHelp", "Psychologist")" method="post">
         @Html.AntiForgeryToken()

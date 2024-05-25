@@ -424,6 +424,41 @@ namespace PsihoKorak_Platforma.Controllers
         }
 
         [HttpPost]
+        public IActionResult FilterByPatient(String PatientName, int SessionId)
+        {
+            var s = ctx.Sessions.Include(a => a.Helps).Include(b => b.SessionType).FirstOrDefault(v => v.SessionId == SessionId);
+
+            var helps = ctx.Helps.AsNoTracking()
+                                 .Include(h => h.Patient)
+                                 .Where(h => (h.Patient.FirstName + " " + h.Patient.LastName).Contains(PatientName))
+                                 .Select(h => new HelpsViewModelHelper
+                                 {
+                                     HelpsId = h.HelpsId,
+                                     Note = h.Note,
+                                     PatientId = h.PatientId,
+                                     SessionId = h.SessionId,
+                                     PsychologistId = h.PsychologistId,
+                                     PatientName = h.Patient.FirstName + " " + h.Patient.LastName
+                                 })
+                                 .ToList();
+
+            return View("Detail", new DetailMasterDetailViewModel
+            {
+                Sessions = new MDViewModel
+                {
+                    SessionId = SessionId,
+                    DateTime = s.DateTime.ToString(),
+                    Duration = s.Duration.ToString(),
+                    SessionType = s.SessionType.SessionTypeName,
+                    Helps = s.Helps
+                },
+                Helps = helps,
+                Patients = ctx.Patients.AsNoTracking().ToList(),
+                SessionTypes = ctx.SessionTypes.AsNoTracking().ToList()
+            });
+        }
+
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateHelp(String Note, int PatientId, int SessionId)
         {
